@@ -18,7 +18,7 @@
 - `color: enum Colores { CELESTE, AMARILLO, ROJO, ROSA, VERDE, NEGRO }`
 - `objetivoSecreto: Objetivo`
 - `objetivoComun: Objetivo`
-- `paisesOcupados: List<Pais>`
+- `idPaisesOcupados: List<Long>` <!-- Se edita el anterior para no tener referencias circulares al serializar o pasar a Json con los guardados -->
 - `eliminado: boolean`
 
 **Métodos:**
@@ -41,7 +41,7 @@
 - `id: Long`
 - `nombre: String`
 - `continente: Continente`
-- `ocupante: Jugador`
+- `idJugadorOcupante: int`<!-- Se edita para evitar nuevamente referencias cruzadas a la hora del guardado de información -->
 - `ejercitos: int`
 - `paisesLimitrofes: List<Pais>`
 
@@ -93,7 +93,7 @@
 - `estado: enum EstadoPartida { INICIAL, EN_CURSO, FINALIZADA }`
 - `turnoActual: int`
 - `numeroRonda: int` <!-- Contador de rondas -->
-- `historialEventos: List<Evento>`
+- `historialEventos: List<Evento>` <!-- Bueno para auditoría, patrón Command aquí -->
 - `tiempoPorTurno: int` (segundos)
 
 **Métodos:**
@@ -107,6 +107,7 @@
 - `guardarEstado()` <!-- Se guarda el momento actual de la partida -->
 - `cargarEstado()` <!-- Se carga el momento actual de la partida -->
 - `finalizarPartida()` <!-- Fin -->
+
 ---
 
 ## 🧭 Mapa
@@ -120,6 +121,7 @@
 **Métodos:**
 - `repartirPaises(List<Jugador> jugadores)` <!-- Reparte paises a los X jugadores -->
 - `validarEventoJugador(Pais origen, Pais destino, Jugador_en_curso, Evento)` <!-- Comunica las acciones del jugador(ataque, reagrupar), asigna fichas a los paises --> <!-- Validar si es limitrofe -->
+- `obtenerPaisPorNombre()`   <!-- Facilita busquedas frecuentes -->
 
 ---
 
@@ -153,6 +155,8 @@
 
 *No requiere muchos métodos, es solo para logging/historial.*
 *Revisar metodo para guardar en un atributo historial un objeto*
+*IMPLEMENTAR SERIALIZACIÓN O GUARDAR TODO EN UN JSON CON RESPECTO A GUARDAR Y CARGAR PARTIDAS*
+
 ---
 
 ## 🎲 Dados
