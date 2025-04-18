@@ -7,21 +7,27 @@
 
 ## 🎮 Jugador
 
-**Responsabilidad:** Representa a un jugador en la partida (puede ser humano o bot).
+**Responsabilidad:** Representa a un jugador en la partida (puede ser humano o bot (hereda)).
 
 **Atributos:**
 - `id: Long`
 - `nombre: String`
 - `tipo: enum TipoJugador { HUMANO, BOT_NOVATO, BOT_BALANCEADO, BOT_EXPERTO }`
 - `ejercitosDisponibles: int`
+- `posicionRonda: int`<!-- Representa la posición del jugador en la ronda, sorteada por la partida, y sirve para recargar partida -->
+- `color: enum Colores { CELESTE, AMARILLO, ROJO, ROSA, VERDE, NEGRO }`
 - `objetivoSecreto: Objetivo`
+- `objetivoComun: Objetivo`
 - `paisesOcupados: List<Pais>`
 - `eliminado: boolean`
 
 **Métodos:**
 - `colocarEjercitos(Map<Pais, Integer> distribucion)`
 - `atacar(Pais origen, Pais destino, int cantidadEjercitos)`
+- `defender(int cantidadEjercitos)`
 - `reagrupar(Pais origen, Pais destino, int cantidadEjercitos)`
+- `solicitarCarta()`
+- `canjearCartas()`
 - `verificarObjetivoCumplido()`
 - `obtenerCantidadTotalEjercitos()`
 
@@ -41,7 +47,6 @@
 
 **Métodos:**
 - `esLimitrofeCon(Pais otro)`
-- `puedeSerAtacadoPor(Jugador atacante)`
 - `agregarEjercitos(int cantidad)`
 - `quitarEjercitos(int cantidad)`
 
@@ -54,7 +59,6 @@
 **Atributos:**
 - `id: Long`
 - `nombre: String`
-- `ejercitosExtra: int`
 - `paises: List<Pais>`
 
 **Métodos:**
@@ -70,11 +74,10 @@
 **Atributos:**
 - `id: Long`
 - `descripcion: String`
-- `tipo: enum TipoObjetivo { COMUN, SECRETO, OCUPACION, DESTRUCCION }`
-- `datosAsociados: List<String>` (ej. nombres de países o jugadores a destruir)
+- `tipo: enum TipoObjetivo { COMUN, SECRETO }`
 
 **Métodos:**
-- `esCumplidoPor(Jugador jugador, List<Jugador> jugadores)`
+- 
 
 ---
 
@@ -85,20 +88,25 @@
 **Atributos:**
 - `id: Long`
 - `jugadores: List<Jugador>`
-- `mapa: Mapa`
+- `mapa: Mapa` <!-- Se puede insertar una vez se ejecute metodo cargarMapa() -->
+- `tipoPartida: enum TiposDePartida { FAIR_PLAY, VALE_TODO }`
 - `estado: enum EstadoPartida { INICIAL, EN_CURSO, FINALIZADA }`
 - `turnoActual: int`
+- `numeroRonda: int` <!-- Contador de rondas -->
 - `historialEventos: List<Evento>`
 - `tiempoPorTurno: int` (segundos)
-- `fechaUltimoMovimiento: LocalDateTime`
 
 **Métodos:**
 - `iniciarPartida()`
-- `avanzarTurno()`
+- `crearJugador()` <!-- Se le asigna color -->
+- `sortearTurno()` <!-- Se le asigna turnos al jugador -->
+- `repartirCartas()` <!-- Se mezclan las cartas adentro de este metodo, también reparte objetivos -->
+- `cargarMapa()` <!-- Se carga tablero -->
+- `avanzarTurno()` <!-- Validar primero si se cumplió un objetivo al avanzar turno, si pasa finalizar la misma -->
 - `verificarGanador()`
-- `guardarEstado()`
-- `cargarEstado()`
-
+- `guardarEstado()` <!-- Se guarda el momento actual de la partida -->
+- `cargarEstado()` <!-- Se carga el momento actual de la partida -->
+- `finalizarPartida()` <!-- Fin -->
 ---
 
 ## 🧭 Mapa
@@ -110,9 +118,8 @@
 - `continentes: List<Continente>`
 
 **Métodos:**
-- `repartirPaises(List<Jugador> jugadores)`
-- `obtenerPaisPorNombre(String nombre)`
-- `validarAtaque(Pais origen, Pais destino, Jugador atacante)`
+- `repartirPaises(List<Jugador> jugadores)` <!-- Reparte paises a los X jugadores -->
+- `validarEventoJugador(Pais origen, Pais destino, Jugador_en_curso, Evento)` <!-- Comunica las acciones del jugador(ataque, reagrupar), asigna fichas a los paises --> <!-- Validar si es limitrofe -->
 
 ---
 
@@ -123,11 +130,11 @@
 **Atributos:**
 - `id: Long`
 - `pais: Pais`
-- `simbolo: enum Simbolo { INFANTERIA, CABALLERIA, ARTILLERIA }`
+- `simbolo: enum Simbolo { GALEÓN, GLOBO, CAÑON }`
 - `jugadorActual: Jugador` (si está en su poder)
 
 **Métodos:**
-- `puedeCanjearseCon(TarjetaPais otra1, TarjetaPais otra2)`
+-
 
 ---
 
@@ -139,22 +146,13 @@
 - `id: Long`
 - `descripcion: String`
 - `fechaHora: LocalDateTime`
-- `tipo: enum TipoEvento { ATAQUE, REFUERZO, REAGRUPACION, OBJETIVO_CUMPLIDO, PARTIDA_FINALIZADA }`
+- `tipo: enum TipoEvento { ATAQUE, REFUERZO, DEFENSA, REAGRUPACION, OBJETIVO_CUMPLIDO, PARTIDA_FINALIZADA, ORGANIZAR_MAPA }`
 
 **Métodos:**  
+- `insertarEvento()` <!-- Insertar eventos de la partida -->
+
 *No requiere muchos métodos, es solo para logging/historial.*
-
----
-
-## 🤖 Bot (Interfaz + Estrategias)
-
-**Responsabilidad:** Define el comportamiento de un jugador bot.
-
-**Implementaciones:**
-- `BotNovato`
-- `BotBalanceado`
-- `BotExperto`
-
+*Revisar metodo para guardar en un atributo historial un objeto*
 ---
 
 ## 🎲 Dados
@@ -162,14 +160,36 @@
 **Responsabilidad:** Simula los enfrentamientos entre países durante los ataques.
 
 **Atributos:**
-- `valoresAtacante: List<Integer>` — resultados de los dados del atacante (máx. 3)
-- `valoresDefensor: List<Integer>` — resultados de los dados del defensor (máx. 2)
-- `perdidasAtacante: int`
-- `perdidasDefensor: int`
+- `valoresDado: List<Integer>` — resultados de los dados del atacante (máx. 3)
 
 **Métodos:**
-- `lanzarDadosAtacante(int cantidad)`
-- `lanzarDadosDefensor(int cantidad)`
-- `resolverCombate()`
-- `getResultado()`
+- `lanzarDados(int cantidad)`
+
+---
+
+## Comunicación
+
+**Responsabilidad:**  Simula el chat entre bots y jugadores
+
+**Atributos:**
+- `id: Long`
+- `mensaje: String`
+
+**Métodos:**
+- `chatGeneral()` <!-- Insertar dialogo en público @everyone -->
+- `chatPrivado()` <!-- Insertar dialogo en privado @paolini_pachequini -->
+
+---
+
+## 🌍 Reglas
+
+**Responsabilidad:** Representa reglamento general
+
+**Atributos:**
+- `id: Long`
+- `nombre: String`
+
+
+**Métodos:**
+- `obtenerReglas()`
 
