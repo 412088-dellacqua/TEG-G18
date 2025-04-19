@@ -229,3 +229,7 @@
 **Métodos:**
 - `obtenerReglas()`
 
+## DER
+![image](https://github.com/user-attachments/assets/cf49dc35-1583-48d7-a1c3-453d3527445e)
+
+
