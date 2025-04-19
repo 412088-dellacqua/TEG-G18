@@ -121,7 +121,7 @@
 - `estado: enum EstadoPartida { INICIAL, EN_CURSO, FINALIZADA }`
 - `turnoActual: int`
 - `numeroRonda: int` <!-- Contador de rondas -->
-- `historialEventos: List<Evento>` <!-- Bueno para auditoría, patrón Command aquí -->
+- `historialMovimientos: List<HistoralMovimientos>` <!-- Bueno para auditoría, patrón Command aquí -->
 - `tiempoPorTurno: int` (segundos)
 
 **Métodos:**
@@ -148,7 +148,7 @@
 
 **Métodos:**
 - `repartirPaises(List<Jugador> jugadores)` <!-- Reparte paises a los X jugadores -->
-- `validarEventoJugador(Pais origen, Pais destino, Jugador_en_curso, Evento)` <!-- Comunica las acciones del jugador(ataque, reagrupar), asigna fichas a los paises --> <!-- Validar si es limitrofe -->
+- `validarEventoJugador(Pais origen, Pais destino, Jugador_en_curso, Movimiento)` <!-- Comunica las acciones del jugador(ataque, reagrupar), asigna fichas a los paises --> <!-- Validar si es limitrofe -->
 - `obtenerPaisPorNombre()`   <!-- Facilita busquedas frecuentes -->
 
 ---
@@ -168,15 +168,19 @@
 
 ---
 
-## 📝 Evento
+## 📝 HistoralMovimientos
 
 **Responsabilidad:** Representa un movimiento o acción dentro de la partida.
 
 **Atributos:**
 - `id: Long`
-- `descripcion: String`
+- `partidaEnCurso: Partida`
+- `jugadorEnCurso: Jugador`
+- `paisOrigen: Pais`
+- `paisDestino: Pais`
+- `cantidadEjercitos: int`
 - `fechaHora: LocalDateTime`
-- `tipo: enum TipoEvento { ATAQUE, REFUERZO, DEFENSA, REAGRUPACION, OBJETIVO_CUMPLIDO, PARTIDA_FINALIZADA, ORGANIZAR_MAPA }`
+- `tipoMovimiento: enum TipoMovimiento { ATAQUE, REFUERZO, DEFENSA, REAGRUPACION, OBJETIVO_CUMPLIDO, PARTIDA_FINALIZADA, ORGANIZAR_MAPA }`
 
 **Métodos:**  
 - `insertarEvento()` <!-- Insertar eventos de la partida -->
