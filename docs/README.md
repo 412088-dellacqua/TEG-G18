@@ -5,6 +5,34 @@
 
 ---
 
+## 🧑‍💻 Usuario
+
+**Responsabilidad:** Representa a un usuario registrado en el sistema, ya sea jugador o administrador.
+
+**Atributos:**
+- `id: Long`
+- `nombre: String`
+- `email: String`
+- `contraseña: String`
+- `tipo: enum TipoUsuario { JUGADOR, ADMINISTRADOR }`
+- `fechaRegistro: LocalDateTime`
+- `estado: enum EstadoUsuario { ACTIVO, INACTIVO, BLOQUEADO }`
+- `jugadores: List<Jugador>` <!-- Relación 1 a muchos con la entidad Jugador, un usuario puede tener varios jugadores -->
+
+**Métodos:**
+- `registrarUsuario()`
+- `iniciarSesion()`
+- `cerrarSesion()`
+- `actualizarPerfil(String nombre, String email, String contraseña)`
+- `bloquearUsuario()`
+- `desbloquearUsuario()`
+- `consultarPartidas()` <!-- Obtiene las partidas asociadas a los jugadores -->
+- `obtenerEstadisticas()` <!-- Obtiene las estadísticas de los jugadores asociados -->
+- `asociarJugador(Jugador jugador)` <!-- Asocia un jugador a un usuario -->
+- `consultarJugadores()` <!-- Devuelve la lista de jugadores asociados al usuario -->
+
+---
+
 ## 🎮 Jugador
 
 **Responsabilidad:** Representa a un jugador en la partida (puede ser humano o bot (hereda)).
